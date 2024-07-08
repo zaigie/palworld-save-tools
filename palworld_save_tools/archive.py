@@ -402,6 +402,11 @@ class FArchiveReader:
                 "id": self.optional_guid(),
                 "value": self.i32(),
             }
+        elif type_name == "UInt32Property":
+            value = {
+                "id": self.optional_guid(),
+                "value": self.u32(),
+            }
         elif type_name == "Int64Property":
             value = {
                 "id": self.optional_guid(),
@@ -831,6 +836,10 @@ class FArchiveWriter:
             self.optional_guid(property.get("id", None))
             self.i32(property["value"])
             size = 4
+        elif property_type == "UInt32Property":
+            self.optional_guid(property.get("id", None))
+            self.u32(property["value"])
+            size = 4
         elif property_type == "Int64Property":
             self.optional_guid(property.get("id", None))
             self.i64(property["value"])
@@ -951,6 +960,8 @@ class FArchiveWriter:
         for i in range(count):
             if array_type == "IntProperty":
                 self.i32(values[i])
+            elif array_type == "UInt32Property":
+                self.u32(values[i])
             elif array_type == "Int64Property":
                 self.i64(values[i])
             elif array_type == "FloatProperty":
