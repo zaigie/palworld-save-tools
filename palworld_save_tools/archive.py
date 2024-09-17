@@ -402,6 +402,11 @@ class FArchiveReader:
                 "id": self.optional_guid(),
                 "value": self.i32(),
             }
+        elif type_name == "UInt16Property":
+            value = {
+                "id": self.optional_guid(),
+                "value": self.u16(),
+            }
         elif type_name == "UInt32Property":
             value = {
                 "id": self.optional_guid(),
@@ -447,6 +452,20 @@ class FArchiveReader:
             value = {
                 "value": self.bool(),
                 "id": self.optional_guid(),
+            }
+        elif type_name == "ByteProperty":
+            enum_type = self.fstring()
+            _id = self.optional_guid()
+            if enum_type == "None":
+                enum_value = self.byte()
+            else:
+                enum_value = self.fstring()
+            value = {
+                "id": _id,
+                "value": {
+                    "type": enum_type,
+                    "value": enum_value,
+                },
             }
         elif type_name == "ArrayProperty":
             array_type = self.fstring()
@@ -836,6 +855,10 @@ class FArchiveWriter:
             self.optional_guid(property.get("id", None))
             self.i32(property["value"])
             size = 4
+        elif property_type == "UInt16Property":
+            self.optional_guid(property.get("id", None))
+            self.u16(property["value"])
+            size = 2
         elif property_type == "UInt32Property":
             self.optional_guid(property.get("id", None))
             self.u32(property["value"])
@@ -866,6 +889,13 @@ class FArchiveWriter:
             self.bool(property["value"])
             self.optional_guid(property.get("id", None))
             size = 0
+        elif property_type == "ByteProperty":
+            self.fstring(property["value"]["type"])
+            self.optional_guid(property.get("id", None))
+            if property["value"]["type"] == "None":
+                self.byte(property["value"]["value"])
+            else:
+                self.fstring(property["value"]["value"])
         elif property_type == "ArrayProperty":
             self.fstring(property["array_type"])
             self.optional_guid(property.get("id", None))
