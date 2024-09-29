@@ -894,8 +894,9 @@ class FArchiveWriter:
             self.optional_guid(property.get("id", None))
             if property["value"]["type"] == "None":
                 self.byte(property["value"]["value"])
+                size = 1
             else:
-                self.fstring(property["value"]["value"])
+                size = self.fstring(property["value"]["value"])
         elif property_type == "ArrayProperty":
             self.fstring(property["array_type"])
             self.optional_guid(property.get("id", None))
