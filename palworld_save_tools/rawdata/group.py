@@ -59,6 +59,9 @@ def decode_bytes(
         group_data |= indie
     if group_type == "EPalGroupType::Guild":
         guild = {
+            # hack: these are unknown values that don't seem to have any meaning
+            "u1": reader.i64(),  # perhaps like history_admin_player_uid
+            "u2": reader.i64(),  # always 0, not sure what this is
             "admin_player_uid": reader.guid(),
             "players": [],
         }
@@ -119,6 +122,8 @@ def encode_bytes(p: dict[str, Any]) -> bytes:
         writer.guid(p["admin_player_uid"])
         writer.i32(len(p["players"]))
         for i in range(len(p["players"])):
+            writer.i64(p["u1"])
+            writer.i64(p["u2"])
             writer.guid(p["players"][i]["player_uid"])
             writer.i64(p["players"][i]["player_info"]["last_online_real_time"])
             writer.fstring(p["players"][i]["player_info"]["player_name"])
